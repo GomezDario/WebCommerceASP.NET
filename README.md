@@ -8,12 +8,12 @@ Este proyecto es una aplicación web desarrollada en C# utilizando ASP.NET y MVC
 
 # Funcionalidades Principales
 
-1 - Registro de Usuarios: Los usuarios pueden crear cuentas nuevas para acceder a la plataforma.
-2 - Catálogo de Productos: Exhibe una amplia variedad de productos disponibles para la compra.
-3 - Carrito de Compras: Permite a los usuarios agregar productos, gestionar cantidades y proceder al pago.
-4 - Proceso de Pago Seguro: Integración con métodos de pago seguros para garantizar transacciones fiables.
-5 - Gestión de Pedidos: Los usuarios pueden ver el estado de sus pedidos y el historial de compras.
-6 - Panel de Administración: Herramientas para que los administradores gestionen productos, pedidos y usuarios.
+- Registro de Usuarios: Los usuarios pueden crear cuentas nuevas para acceder a la plataforma.
+- Catálogo de Productos: Exhibe una amplia variedad de productos disponibles para la compra.
+- Carrito de Compras: Permite a los usuarios agregar productos, gestionar cantidades y proceder al pago.
+- Proceso de Pago Seguro: Integración con métodos de pago seguros para garantizar transacciones fiables.
+- Gestión de Pedidos: Los usuarios pueden ver el estado de sus pedidos y el historial de compras.
+- Panel de Administración: Herramientas para que los administradores gestionen productos, pedidos y usuarios.
 
 # Tecnologías Utilizadas
 
