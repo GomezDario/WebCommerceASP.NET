@@ -7,8 +7,8 @@
 
 
 <ol class="breadcrumb mb-4 mt-4">
-            <li class="breadcrumb-item"><a href="index.html">Resumen</a></li>
-            <li class="breadcrumb-item active">Usuarios</li>
+    <li class="breadcrumb-item"><a href="index.html">Resumen</a></li>
+    <li class="breadcrumb-item active">Usuarios</li>
 </ol>
 
 <div class="card">
@@ -21,7 +21,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12">
-                <button type="button" class="btn btn-success">Crear Nuevo</button>
+                <button type="button" class="btn btn-success" onclick="abrirModal(null)">Crear Nuevo</button>
             </div>
         </div>
 
@@ -42,43 +42,97 @@
 
             </thead>
             <tbody>
-
-
-
-
-
-
-
             </tbody>
         </table>
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="exampleModalLabel">Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <input id="txtid" type="text" value="0"/>
+
+
+
+                <div class="row g-2">
+
+                    <!-- Nombres -->
+                    <div class="col-sm-6">
+                        <label for="txtnombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="txtnombres" autocomplete="off">
+                    </div>
+
+
+
+                    <!-- Apellidos -->
+                    <div class="col-sm-6">
+                        <label for="txtapellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="txtapellidos" autocomplete="off">
+                    </div>
+
+
+
+                    <!-- Correos -->
+                    <div class="col-sm-6">
+                        <label for="txtcorreo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="txtcorreo" placeholder="name@example.com" autocomplete="off">
+                    </div>
+
+
+
+                    <!-- Activo -->
+                    <div class="col-sm-6">
+
+                        <label for="cboactivo" class="form-label">Activo</label>
+
+                        <select class="form-select" id="cboactivo">
+                            <option selected>Open this select menu</option>
+                            <option value="1">Si</option>
+                            <option value="0">No</option>
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+                <div class="row mt-2">
+
+                    <div class="col-12">
+
+                    <div id="mensajeError" class="alert alert-danger" role = "alert" >
+                        This is a danger alert—check it out! XD
+                    </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="Guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section scripts{
-    
+
     <script>
 
         var tabladata;
-
-
-
-
-
-
-        jQuery.ajax({
-
-            url:'@Url.Action("ListarUsuarios","Home")',
-            type: "GET",
-            dataType: "json",
-            contentType: "application/json; charset-utf-8",
-            success: function (data) {
-
-                console.log(data)
-
-            }
-
-        })
+        var filaSeleccionada;
 
         tabladata = $("#tabla").DataTable({ // convierte en un data table
 
@@ -120,8 +174,8 @@
                 },
                 {
 
-                    "defaultContent": '<button type="button" class="btn btn-primary btn-sm"><i class="fas fa-pen "></i></button>' + // editar
-                                      '<button type="button" class="btn btn-danger btn-sm ms-2"><i class="fas fa-trash "></i></button>', // eliminar
+                    "defaultContent": '<button type="button" class="btn btn-primary btn-sm btn-editar"><i class="fas fa-pen "></i></button>' + // editar
+                                      '<button type="button" class="btn btn-danger btn-sm ms-2 btn-eliminar"><i class="fas fa-trash "></i></button>', // eliminar
                     "orderable": false,
                     "searcheable": false,
                     "width": "90px"
@@ -129,13 +183,230 @@
                 }
 
 
-            ]
+            ],
+            "language": {
+
+                "url":"https://cdn.datatables.net/plug-ins/2.0.2/i18n/es-ES.json"
+
+            }
+
+
+
+        });
+
+        function abrirModal(json) { // limpia todo al abrir en caso de que haya informacion previa
+
+            $("#txtid").val(0);
+            $("#txtnombres").val("");
+            $("#txtapellidos").val("");
+            $("#txtcorreo").val("");
+            $("#cboactivo").val(1);
+            $("#mensajeError").hide();
+            
+
+
+
+            if (json != null) { // asigna todos los valores a los campos correspondientes
+
+                $("#txtid").val(json.IdUsuario);
+                $("#txtnombres").val(json.Nombres);
+                $("#txtapellidos").val(json.Apellidos);
+                $("#txtcorreo").val(json.Correo);
+                $("#cboactivo").val(json.Activo == true ? 1 : 0);
+
+            } 
+
+
+
+
+
+
+            $("#FormModal").modal("show");
+
 
         }
-        );
+       
+        $("#tabla tbody").on("click", '.btn-editar', function () { // la funcion del boton editar
+
+           filaSeleccionada = $(this).closest("tr"); // selecciona la fila
+
+           var data = tabladata.row(filaSeleccionada).data(); // aca se almacena toda la info de esa fila seleccionada
+
+            
+
+           abrirModal(data)
+
+
+        })
+
+
+        $("#tabla tbody").on("click", '.btn-eliminar', function () { // la funcion del boton eliminar
+
+            var usuarioSeleccionado = $(this).closest("tr"); // selecciona la fila
+
+            var data = tabladata.row(usuarioSeleccionado).data(); // aca se almacena toda la info de esa fila seleccionada
+
+            console.log(data);
+
+            swal({
+                title: "Esta seguro?",
+                text: "¿Desea eliminar el usuario?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-primary",
+                confirmButtonText: "Si",
+                cancelButtonText: "No",
+                closeOnConfirm: false
+            },
+                function () {
+                    // ACA
+
+                    jQuery.ajax({
+                        url: '@Url.Action("EliminarUsuario", "Home")',
+                        type: "POST",
+                        data: JSON.stringify({ id: data.IdUsuario }), // el data que uso arriba y pido el id
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) { // data dif al de arriba
+
+                            
+
+                            // valido la resp
+
+                            if (data.resultado) {
+                                // cual es la fila
+                                tabladata.row(usuarioseleccionado).remove().draw(); //dibuja el cambio
+                                
+
+                            } else {
+                                swal("No se pudo eliminar", data.mensaje, "error")
+                            }
+
+                            //$('#tabla').data.reload();
+
+                        },
+                        error: function (error) {
+
+                            console.log(error)
+
+                        }
+
+                    })
+
+                    $('#tabla').data.reload();
+                });
+
+           
+            
+        })
+
+
+        function Guardar() {
+
+            var Usuario = {
+                // asigna los valores
+                IdUsuario: $("#txtid"). val(),
+                Activo: $("#cboactivo").val() == 1 ? true : false, 
+                Apellidos: $("#txtapellidos").val(),
+                Correo: $("#txtcorreo").val(),
+                Nombres: $("#txtnombres").val()
+                
+
+            }
+
+
+            jQuery.ajax({
+
+                url: '@Url.Action("GuardarUsuario", "Home") ', // nombre del metodo
+                type: "POST", // tipo post
+                data: JSON.stringify({objeto : Usuario}), // paso los valores, convertido a texto
+                dataType: "json",
+                contentType: "application/json; charset-utf-8",
+
+
+                //acciones que se ejecutan antes y durante
+                success: function (data) {
+                    // cuando la operacion fue exitosa
+
+                    $(".modal-body").LoadingOverlay("hide"); // se oculta el loading
+                    
+
+
+                    // USUARIO NUEVO
+                    if (Usuario.IdUsuario == 0) {
+                        // cuando creo un nuevo usuario
+
+                        if (data.IdUsuario != 0) {
+
+                            Usuario.IdUsuario = data.resultado // ese id se lo asigno/actualizacon al obj creado
+                            tabladata.row.add(Usuario).draw(false);
+
+                            $("#FormModal").modal("hide"); // oculta el modal
+
+                        } else {
+
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+                                
+                        }
 
 
 
+                    } else { //USUARIO EDITAR
+
+                        // para editar
+                        //Actualizando el usuario dentro de la fila seleccionada
+
+                        if (data.resultado) {
+
+                            tabladata.row(filaSeleccionada).data(Usuario).draw(false);
+                            filaSeleccionada = null;
+                            $("#FormModal").modal("hide");
+
+                        } else {
+
+                            $("#mensajeError").text(data.mensaje);
+                            $("#mensajeError").show();
+
+                        }
+
+
+                            
+
+
+                    }
+
+                },
+
+                error: function (error) {
+                    // cuando occuerre un error
+
+                    $(".modal-body").LoadingOverlay("hide"); // se oculta el loading
+                    $("#mensajeError").text("Error Ajax");
+                    $("#mensajeError").show();
+
+                },
+
+                beforeSend: function () {
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2, // Propiedades
+                        text: "Cargando...",
+                        size:14
+
+                    })
+
+
+                },
+            });
+
+
+
+
+
+            
+
+
+        }
 
 
 
@@ -153,7 +424,7 @@
 
 
 
-    }
+}
 
 
 
